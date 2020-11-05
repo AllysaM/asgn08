@@ -1,54 +1,57 @@
 <!DOCTYPE html>
-<!--	Author: Mike O'Kane
-		Date:	August, 2017
-		File:	modify2.php
-		Purpose: Chapter 15 Exercise
-		
-		Modify1.html asks the user for an employee ID. Modify1.php receives the ID,
-		creates an Employee instance, looks up the employee data using the ID, 
-		and displays the weekly pay for the employee. The problem is, what if the ID is not 
-		found? Look at the findEmployee() function in inc-employee-object.php. The WHILE loop
-		continues to read lines from the employee file until it either finds an employee with 
-		the right ID or reaches the end of the file. If it finds the right ID then a variable 
-		named $notFound is set to FALSE, but if the loop reaches the end of the file without 
-		finding the right ID the $notFound variable will still be true.
-		
-                Add an IF.. ELSE structure at the end the findEmployee() function that returns 0 if 
-                $notFound is true, otherwise returns 1 if it is false. 
-                (be sure you do this AFTER the loop structure and not inside the loop structure!). 
-                
-                Now modify the code in Modify2.php so that the program uses a variable named $result to 
-                receive the value returned by findEmployee(), which will be 1 or 0, and uses this 
-                in the test of an IF..ELSE structure: if $result is 1 display the weekly pay, or if 
-                $result is 0, display a message that the ID could not be found.
+<!--Author:   AJ JOHNSON
+	Date:     10/5/2020
+	File:	  modify2.php
+	Purpose:  This program lists the complete names and hourly wage of all employees with the last name of Smith.
+		  Modify this so that prints the complete names and hourly wage of all employees with a last name of Smith, who also earn at least 12.00.
 -->
 <html>
 <head>
-	<title>Modify2</title>
-	<link rel ="stylesheet" type="text/css" href="sample.css">
+<title>Modify 2</title>
+<link rel ="stylesheet" type="text/css" href="sample.css">
 </head>
 <body>
+<h1>Modify 2 </h1>
+<?php
 
-	<h1>Modify2</h1>
+$server = "localhost";
+$user = "wbip";
+$pw = "wbip123";
+$db = "test";
 
-	<?php
-	include("inc-employee-object.php");
+$connect=mysqli_connect($server, $user, $pw, $db);
 
-	$id = $_POST["id"];
+if( !$connect)
+{
+	die("ERROR: Cannot connect to database $db on server $server
+	using user name $user (".mysqli_connect_errno().
+	", ".mysqli_connect_error().")");
+}
+else
+{
+	$userQuery = "SELECT firstName, lastName, hourlyWage FROM personnel WHERE lastName ='Smith' AND hourlyWage >= 12.00";
+	$result = mysqli_query($connect, $userQuery);
 
-	$emp1 = new Employee();
+	if (!$result)
+	{
+		die("Could not successfully run query ($userQuery) from $db: " . mysqli_error($connect) );
+	}
 
-	$result = $emp1->findEmployee($id);
-  
-    if($result == 1)
-    {
-      print ("<p>Weekly Pay for ".$emp1->getFirstName()." ". $emp1->getLastName().": $".$emp1->getWeeklyPay()."</p>");
-    }
-    else
-    {
-      print ("<p><em>Employee not found.</em></p>");
-    }
-	?>
+	if (mysqli_num_rows($result) == 0)
+	{
+		print("No records found with query $userQuery");
+	}
+	else
+	{
+		 while ($row = mysqli_fetch_assoc($result))
+		{
+			print (	"<p>".$row['firstName']." ".$row['lastName']."'s hourly wage is $".
+			number_format($row['hourlyWage'], 2)."</p>");
+		}
 
+	}
+     mysqli_close($connect);   // close the connection
+}
+?>
 </body>
 </html>

@@ -1,40 +1,57 @@
 <!DOCTYPE html>
-<!--	Author: Mike O'Kane
-		Date:	August, 2017
-		File:	modify3.php
-		Purpose: Chapter 15 Exercise
-		
-		Modify3.html asks the user for an employee ID. Modify1.php receives the ID,
-		creates an Employee instance, looks up the employee data using the ID, 
-		and displays the weekly pay for the employee.
-		
-		Modify this so that, instead of displaying the weekly pay, the program displays the annual pay. 
-		
-		To do this, add a new function in inc-employee-object.php named getAnnualPay(). This function 
-		must calculate the hourly wage * 40 * 52 to obtain the annual pay,
-		and should return this, formatted the same way as the result in getWeeklyPay(). 
-		
-		Change the print statement in Modify3.php to display the annual pay instead of the weekly pay, 
+<!--Author:   AJ JOHNSON
+	Date:     10/5/2020
+	File:	  modify3.php
+	Purpose:  This program lists the complete names and hourly wage of all employees with the last name of Smith. Modify this so that prints the complete names and hourly wage of all employees with a last name that begins with 'S'.
+	Hint: 	  You will need to use a wild card character, and the '=' operator must be changed.
 -->
-
 <html>
 <head>
-	<title>Modify 3</title>
-	<link rel ="stylesheet" type="text/css" href="sample.css"  />
+<title>Modify 3</title>
+<link rel ="stylesheet" type="text/css" href="sample.css">
 </head>
 <body>
+<h1>Modify 3 </h1>
 <?php
-	include("inc-employee-object.php");
 
-	$id = $_POST["id"];
+$server = "localhost";
+$user = "wbip";
+$pw = "wbip123";
+$db = "test";
 
-	$emp1 = new Employee();
+$connect=mysqli_connect($server, $user, $pw, $db);
 
-	$emp1->findEmployee($id);
+if( !$connect)
+{
+	die("ERROR: Cannot connect to database $db on server $server
+	using user name $user (".mysqli_connect_errno().
+	", ".mysqli_connect_error().")");
+}
+else
+{
+	$userQuery = "SELECT firstName, lastName, hourlyWage FROM personnel WHERE lastName LIKE 'S%'";
+	$result = mysqli_query($connect, $userQuery);
 
-	print ("<p>Annual Pay for ".$emp1->getFirstName()." ". $emp1->getLastName().": $".$emp1->getAnnualPay()."</p>");
+	if (!$result)
+	{
+		die("Could not successfully run query ($userQuery) from $db: " . mysqli_error($connect) );
+	}
+
+	if (mysqli_num_rows($result) == 0)
+	{
+		print("No records found with query $userQuery");
+	}
+	else
+	{
+		 while ($row = mysqli_fetch_assoc($result))
+		{
+			print (	"<p>".$row['firstName']." ".$row['lastName']."'s hourly wage is $".
+			number_format($row['hourlyWage'], 2)."</p>");
+		}
+
+	}
+     mysqli_close($connect);   // close the connection
+}
 ?>
 </body>
 </html>
-
-

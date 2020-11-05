@@ -1,39 +1,59 @@
 <!DOCTYPE html>
-<!--Author:
-	Date:
+<!--Author:   AJ JOHNSON
+	Date:     10/5/2020
 	File:	  fixit5.php
-	Purpose:  What's wrong here? The code creates an Employee 
-			  instance, then sets the employee attributes 
-			  then prints the ID, name, and weekly pay. 
-			  But the attributes and pay aren't printing. 
-			  What's the problem? Hint: are the correct 
-			  methods always being used here?
+	Purpose:  What's wrong here? This code should list the complete names and hourly pay of
+			  all employees with the last name of Smith. The code executes but displays a
+			  "No rows found.." message .
+	Hint: 	  Locate that error message in the code. Why is this being displayed? 
 -->
-
 <html>
 <head>
-	<title>Wage Report</title>
-	<link rel ="stylesheet" type="text/css" href="sample.css">
+<title>Fixit 5</title>
+<link rel ="stylesheet" type="text/css" href="sample.css">
 </head>
 <body>
-	<h1>WAGE REPORT</h1>
+<h1>Fixit 5 </h1>
+<?php
 
-	<?php
+$server = "localhost";
+$user = "wbip";
+$pw = "wbip123";
+$db = "test";
 
-	include("inc-employee-object.php");
+$connect=mysqli_connect($server, $user, $pw, $db);
 
-	$emp1 = new Employee();
+if( !$connect)
+{
+	die("ERROR: Cannot connect to database $db on server $server
+	using user name $user (".mysqli_connect_errno().
+	", ".mysqli_connect_error().")");
+}
+else
+{
+	$userQuery = "SELECT firstName, lastName, hourlyWage FROM personnel WHERE lastName='Smith'";
+	$result = mysqli_query($connect, $userQuery);
 
-	$emp1->setID("123456");
-	$emp1->setFirstName("Alan");
-	$emp1->setLastName("Turing");
-	$emp1->setHourlyWage(15.25);
-	print("<table>
-			<tr><td>ID</td><td>".$emp1->getID()."</td></tr>
-			<tr><td>First Name</td><td>".$emp1->getFirstName()."</td></tr>
-			<tr><td>Last Name</td><td>".$emp1->getLastName()."</td></tr>
-			<tr><td>Weekly Pay</td><td>".$emp1->getWeeklyPay(40)."</td></tr>
-			</table>");
-	?>
+	if (!$result)
+	{
+		die("Could not successfully run query ($userQuery) from $db: " . mysqli_error($connect) );
+	}
+
+	if (mysqli_num_rows($result) == 0)
+	{
+		print("No records found with query $userQuery");
+	}
+	else
+	{
+		 while ($row = mysqli_fetch_assoc($result))
+		{
+			print (	"<p>".$row['firstName']." ".$row['lastName']."'s hourly wage is $".
+			number_format($row['hourlyWage'], 2)."</p>");
+		}
+
+	}
+     mysqli_close($connect);   // close the connection
+}
+?>
 </body>
 </html>

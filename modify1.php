@@ -1,48 +1,55 @@
 <!DOCTYPE html>
-<!--	Author: Mike O'Kane
-		Date:	August, 2017
-		File:	modify1.php
-		Purpose: Chapter 15 Exercise
-		
-		Modify1.html asks the user for an employee ID. Modify1.php receives the ID,
-		creates an Employee instance, looks up the employee data using the ID, 
-		and displays the weekly pay for the employee.
-		
-		Modify this application so that Modify1.html asks for three ID's, and Modify1.php
-		receives the three ID's and uses three Employee instances to obtain and display the 
-		pay for all three.
-			
-		Here are three valid ID's to test this: 003345, 012345, 123456
+<!--Author:   AJ JOHNSON
+	Date:     10/5/2020
+	File:	  modify1.php
+	Purpose:  This program lists the complete names and hourly wage of all employees with the last name of Smith. Modify this so that prints the complete names and job title of all employees with a last name of King or Jones.
+	Hint: Note that the modified query requires the job title and not the hourly wage. Remember to change the print statement!
 -->
-
 <html>
 <head>
-	<title>Modify 1</title>
-	<link rel ="stylesheet" type="text/css" href="sample.css"  />
+<title>Modify 1</title>
+<link rel ="stylesheet" type="text/css" href="sample.css">
 </head>
 <body>
+<h1>Modify 1 </h1>
 <?php
-	include("inc-employee-object.php");
 
-	$id1 = $_POST["id1"];
-    $id2 = $_POST["id2"];
-    $id3 = $_POST["id3"];
+$server = "localhost";
+$user = "wbip";
+$pw = "wbip123";
+$db = "test";
 
-	$emp1 = new Employee();
-    $emp2 = new Employee();
-    $emp3 = new Employee();
+$connect=mysqli_connect($server, $user, $pw, $db);
 
-	$emp1->findEmployee($id1);
-    $emp2->findEmployee($id2);
-    $emp3->findEmployee($id3);
+if( !$connect)
+{
+	die("ERROR: Cannot connect to database $db on server $server
+	using user name $user (".mysqli_connect_errno().
+	", ".mysqli_connect_error().")");
+}
+else
+{
+	$userQuery = "SELECT firstName, lastName, jobTitle FROM personnel WHERE lastName='King' OR lastName='Jones'";
+	$result = mysqli_query($connect, $userQuery);
 
-	print ("<p>Weekly Pay for ".$emp1->getFirstName()." ". $emp1->getLastName().": $".$emp1->getWeeklyPay()."</p>");
-  
-    print ("<p>Weekly Pay for ".$emp2->getFirstName()." ". $emp2->getLastName().": $".$emp2->getWeeklyPay()."</p>");
-  
-    print ("<p>Weekly Pay for ".$emp3->getFirstName()." ". $emp3->getLastName().": $".$emp3->getWeeklyPay()."</p>");
+	if (!$result)
+	{
+		die("Could not successfully run query ($userQuery) from $db: " . mysqli_error($connect) );
+	}
+
+	if (mysqli_num_rows($result) == 0)
+	{
+		print("No records found with query $userQuery");
+	}
+	else
+	{
+		 while ($row = mysqli_fetch_assoc($result))
+		{
+			print ("<p>".$row['firstName']." ".$row['lastName']."'s job title is ".$row['jobTitle']."</p>");
+		}
+	}
+     mysqli_close($connect);   // close the connection
+}
 ?>
 </body>
 </html>
-
-

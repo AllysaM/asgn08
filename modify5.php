@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <!--Author:   AJ JOHNSON
 	Date:     10/5/2020
-	File:	  fixit1.php
-	Purpose:  What's wrong here? This code should list the complete names and hourly pay of
-			  all employees with the last name of Smith. But instead it generates an error.
-	Hint: 	  The problem is with the syntax of the SELECT statement
+	File:	  modify5.php 
+	Purpose:  This program lists the first and last names of all sales employees.
+		  Modify this so that, instead of using a loop to display the names, the program simply displays a paragraph that reports
+		 the number of sales staff, for example "There are 4 sales staff". Use a MySQL function to obtain the number of sales staff. 
+	Hint: 	 There are two different MySQL functions that you can use here: you can modify the SELECT statement to use a MySQL aggregation function,
+		 or you can use the MySQL function that returns the number of records in the result set. 
 -->
 <html>
 <head>
-<title>Fixit 1</title>
+<title>Modify 5</title>
 <link rel ="stylesheet" type="text/css" href="sample.css">
 </head>
 <body>
-<h1>Fixit 1 </h1>
+<h1>Modify 5 </h1>
 <?php
 
 $server = "localhost";
@@ -30,7 +32,7 @@ if( !$connect)
 }
 else
 {
-	$userQuery = "SELECT firstName, hourlyWage FROM personnel WHERE lastName ='Smith'";
+	$userQuery = "SELECT COUNT(empID) FROM personnel WHERE jobTitle='Sales' ";
 	$result = mysqli_query($connect, $userQuery);
 
 	if (!$result)
@@ -44,10 +46,10 @@ else
 	}
 	else
 	{
+		 print("<h1>SALES STAFF REPORT</h1>");
 		 while ($row = mysqli_fetch_assoc($result))
 		{
-			print (	"<p>".$row['firstName']." Smith's hourly wage is $".
-			number_format($row['hourlyWage'], 2)."</p>");
+			print (	"<p>There are ".$row['COUNT(empID)']." sales staff.</p>");
 		}
 
 	}
