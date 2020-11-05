@@ -4,7 +4,7 @@ $USER = "u7dkat9hvtqmv";
 $PW = "RuleofNine";
 $DB = "dbau6j3tpamc7p";
 
-$connect=mysqli_connect($server, $user, $pw, $db);
+$connect=mysqli_connect(SERVER, USER, PW, DB);
 
 if( !$connect)
 {
