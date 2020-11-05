@@ -1,5 +1,5 @@
 <?php
-$server = "localhost";
-$user = "wbip";
-$pw = "wbip123";
-$db = "test";
+$SERVER = "localhost";
+$USER = "u7dkat9hvtqmv";
+$PW = "RuleofNine";
+$DB = "dbau6j3tpamc7p";
